@@ -105,7 +105,7 @@ const Header: React.FC = () => {
     left = (
       <div className="left">
         <Link href="/" className="bold" data-active={isActive('/') ? 'true' : 'false'}>
-          Feed
+          Feed 
         </Link>
         <Link href="/drafts" data-active={isActive('/drafts') ? 'true' : 'false'}>
           My drafts
