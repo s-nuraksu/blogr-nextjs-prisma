@@ -56,11 +56,11 @@ const Post: React.FC<PostProps> = (props) => {
         <p>By {props?.author?.name || 'Unknown author'}</p>
         <ReactMarkdown children={props.content} />
         {!props.published && userHasValidSession && postBelongsToUser && (
-          <button onClick={() => publishPost(props.id)}>Publish</button>
+          <button className="publish" onClick={() => publishPost(props.id)}>Publish</button>
         )}
         {
           userHasValidSession && postBelongsToUser && (
-            <button onClick={() => deletePost(props.id)}>Delete</button>
+            <button className="delete" onClick={() => deletePost(props.id)}>Delete</button>
           )
         }
       </div>
@@ -74,11 +74,28 @@ const Post: React.FC<PostProps> = (props) => {
           margin-top: 2rem;
         }
 
-        button {
-          background: #ececec;
-          border: 0;
-          border-radius: 0.125rem;
-          padding: 1rem 2rem;
+        .delete {
+          background: transparent;
+          color:  #642f8dff;
+          border: 1px solid #642f8dff;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.375rem;
+          cursor: pointer;
+          font-weight: 500;
+          transition: all 0.2s;
+        }
+        .publish {
+          background: #642f8dff;
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.375rem;
+          cursor: pointer;
+          font-weight: 500;
+          transition: background 0.2s;
+        }
+        button:hover {
+          background: #d5c2dcff;
         }
 
         button + button {

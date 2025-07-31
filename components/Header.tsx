@@ -5,186 +5,88 @@ import { signOut, useSession } from 'next-auth/react';
 
 const Header: React.FC = () => {
   const router = useRouter();
-  const isActive: (pathname: string) => boolean = (pathname) =>
-    router.pathname === pathname;
-
   const { data: session, status } = useSession();
 
-  let left = (
-    <div className="left">
-      <Link href="/" className="bold" data-active={isActive('/') ? 'true' : 'false'}>
-        Feed
-      </Link>
-
-      <style jsx>{`
-        .bold {
-          font-weight: bold;
-          text-decoration: none;
-          color: var(--geist-foreground);
-          display: inline-block;
-        }
-
-        .left a[data-active='true'] {
-          color: gray;
-        }
-
-        a + a {
-          margin-left: 1rem;
-        }
-      `}</style>
-    </div>
-  );
-
-  let right = null;
-
-  if (status === 'loading') {
-    left = (
-      <div className="left">
-        <Link href="/" className="bold" data-active={isActive('/') ? 'true' : 'false'}>
-          Feed
-        </Link>
-        <style jsx>{`
-          .bold {
-            font-weight: bold;
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          .left a[data-active='true'] {
-            color: gray;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-        `}</style>
-      </div>
-    );
-    right = (
-      <div className="right">
-        <p>Validating session ...</p>
-        <style jsx>{`
-          .right {
-            margin-left: auto;
-          }
-        `}</style>
-      </div>
-    );
-  }
-
-  if (!session) {
-    right = (
-      <div className="right">
-        <Link href="/api/auth/signin" data-active={isActive('/signup') ? 'true' : 'false'}>
-          Log in
-        </Link>
-        <style jsx>{`
-          a {
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-            border: 1px solid var(--geist-foreground);
-            padding: 0.5rem 1rem;
-            border-radius: 3px;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-
-          .right {
-            margin-left: auto;
-          }
-        `}</style>
-      </div>
-    );
-  }
-
-  if (session) {
-    left = (
-      <div className="left">
-        <Link href="/" className="bold" data-active={isActive('/') ? 'true' : 'false'}>
-          Feed 
-        </Link>
-        <Link href="/drafts" data-active={isActive('/drafts') ? 'true' : 'false'}>
-          My drafts
-        </Link>
-        <style jsx>{`
-          .bold {
-            font-weight: bold;
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          .left a[data-active='true'] {
-            color: gray;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-        `}</style>
-      </div>
-    );
-    right = (
-      <div className="right">
-        <p>
-          {session.user?.name} ({session.user?.email})
-        </p>
-        <Link href="/create">
-          <button>New post</button>
-        </Link>
-        <button onClick={() => signOut()}>Log out</button>
-        <style jsx>{`
-          a {
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          p {
-            display: inline-block;
-            font-size: 13px;
-            padding-right: 1rem;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-
-          .right {
-            margin-left: auto;
-          }
-
-          button {
-            border: none;
-            background: none;
-            color: var(--geist-foreground);
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 3px;
-            font-size: 1rem;
-          }
-
-          button + button {
-            margin-left: 1rem;
-          }
-        `}</style>
-      </div>
-    );
-  }
+  const isActive = (pathname: string) => router.pathname === pathname;
 
   return (
-    <nav>
-      {left}
-      {right}
+    <nav className="header-nav">
+      <div className="left">
+        <Link href="/" data-active={isActive('/')}>
+          Feed
+        </Link>
+        {session && (
+          <Link href="/drafts" data-active={isActive('/drafts')}>
+            My drafts
+          </Link>
+        )}
+      </div>
+
+      <div className="right">
+        {status === 'loading' ? (
+          <p>Validating session...</p>
+        ) : session ? (
+          <>
+            <span className="user-info">
+              {session.user.name} ({session.user.email})
+            </span>
+            <Link href="/create" className="button">
+              New post
+            </Link>
+            <button onClick={() => signOut()} className="button">
+              Log out
+            </button>
+          </>
+        ) : (
+          <Link href="/api/auth/signin" className="button">
+            Log in
+          </Link>
+        )}
+      </div>
+
       <style jsx>{`
-        nav {
+        .header-nav {
           display: flex;
           padding: 2rem;
           align-items: center;
+        }
+        
+        .left {
+          display: flex;
+          gap: 1rem;
+        }
+        
+        .right {
+          margin-left: auto;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+        
+        .left a, .right a, .right button {
+          text-decoration: none;
+          color: var(--geist-foreground);
+          font-size:1rem;
+        }
+        
+        .left a[data-active='true'] {
+          color: gray;
+        }
+        
+        .user-info {
+          font-size: 13px;
+          padding-right: 1rem;
+        }
+        
+        .button {
+          border: none;
+          padding: 1rem 1rem;
+          cursor: pointer;
+          background: none;
+        }
+        
+        .right button {
+          background: none;
         }
       `}</style>
     </nav>

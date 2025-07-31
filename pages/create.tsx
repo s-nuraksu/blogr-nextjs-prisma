@@ -1,29 +1,30 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 
 const Draft: React.FC = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const router = useRouter();
 
-  const submitData = async (e: React.SyntheticEvent) => {
-  e.preventDefault();
-  try {
-    const body = { title, content };
-    await fetch('/api/post', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    await Router.push('/drafts');
-  } catch (error) {
-    console.error(error);
-  }
-};
+  const submitData = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const body = { title, content };
+      await fetch('/api/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      await router.push('/drafts');
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Layout>
-      <div>
+      <div className="form-container">
         <form onSubmit={submitData}>
           <h1>New Draft</h1>
           <input
@@ -32,46 +33,106 @@ const Draft: React.FC = () => {
             placeholder="Title"
             type="text"
             value={title}
+            className="form-input"
           />
           <textarea
-            cols={50}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Content"
-            rows={8}
             value={content}
+            className="form-textarea"
           />
-          <input disabled={!content || !title} type="submit" value="Create" />
-          <a className="back" href="#" onClick={() => Router.push('/')}>
-            or Cancel
-          </a>
+          <div className="form-actions">
+            <button 
+              type="submit" 
+              disabled={!content || !title}
+              className="submit-button"
+            >
+              Create
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push('/')}
+              className="cancel-button"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
       </div>
+
       <style jsx>{`
-        .page {
-          background: var(--geist-background);
-          padding: 3rem;
-          display: flex;
-          justify-content: center;
-          align-items: center;
+        .form-container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 2rem;
         }
-
-        input[type='text'],
-        textarea {
+        
+        h1 {
+          margin-bottom: 1.5rem;
+        }
+        
+        .form-input,
+        .form-textarea {
           width: 100%;
-          padding: 0.5rem;
-          margin: 0.5rem 0;
-          border-radius: 0.25rem;
-          border: 0.125rem solid rgba(0, 0, 0, 0.2);
+          padding: 0.75rem;
+          margin-bottom: 1rem;
+          border: 1px solid #e2e8f0;
+          border-radius: 0.375rem;
+          font-size: 1rem;
+          transition: border-color 0.2s;
         }
-
-        input[type='submit'] {
-          background: #ececec;
-          border: 0;
-          padding: 1rem 2rem;
+        
+        .form-textarea {
+          min-height: 200px;
+          resize: vertical;
         }
-
-        .back {
-          margin-left: 1rem;
+        
+        .form-input:focus,
+        .form-textarea:focus {
+          outline: none;
+          border-color: #642f8dff;
+          box-shadow: 0 0 0 1px #642f8dff;
+        }
+        
+        .form-actions {
+          display: flex;
+          gap: 1rem;
+          margin-top: 1rem;
+        }
+        
+        .submit-button {
+          background: #642f8dff;
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.375rem;
+          cursor: pointer;
+          font-weight: 500;
+          transition: background 0.2s;
+        }
+        
+        .submit-button:hover {
+          background:  #642f8dff;
+        }
+        
+        .submit-button:disabled {
+          background: #d5c2dcff;
+          cursor: not-allowed;
+        }
+        
+        .cancel-button {
+          background: transparent;
+          color:  #642f8dff;
+          border: 1px solid #642f8dff;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.375rem;
+          cursor: pointer;
+          font-weight: 500;
+          transition: all 0.2s;
+        }
+        
+        .cancel-button:hover {
+          background: #d5c2dcff;
         }
       `}</style>
     </Layout>
